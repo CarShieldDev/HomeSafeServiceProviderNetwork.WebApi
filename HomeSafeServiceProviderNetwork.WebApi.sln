@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeSafeServiceProviderNetwork.WebApi", "HomeSafeServiceProviderNetwork.WebApi\HomeSafeServiceProviderNetwork.WebApi.csproj", "{4601C245-FE54-411B-92EC-1CB69860FCB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeSafeServiceProviderNetwork.Logging", "HomeSafeServiceProviderNetwork.Logging\HomeSafeServiceProviderNetwork.Logging.csproj", "{10179BC6-C801-4846-BE14-80ED53B3977E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4601C245-FE54-411B-92EC-1CB69860FCB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4601C245-FE54-411B-92EC-1CB69860FCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4601C245-FE54-411B-92EC-1CB69860FCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4601C245-FE54-411B-92EC-1CB69860FCB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10179BC6-C801-4846-BE14-80ED53B3977E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10179BC6-C801-4846-BE14-80ED53B3977E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10179BC6-C801-4846-BE14-80ED53B3977E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10179BC6-C801-4846-BE14-80ED53B3977E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08FB0E5D-4638-463B-8E44-024582278865}
+	EndGlobalSection
+EndGlobal
