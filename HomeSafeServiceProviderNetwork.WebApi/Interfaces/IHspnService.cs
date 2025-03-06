@@ -35,8 +35,8 @@ namespace HomeSafeServiceProviderNetwork.WebApi.Interfaces
         Task<int> InsertServicedLocationsAsync(List<HspnServicedLocation> servicedLocations);
         Task<IEnumerable<HspnServiceProvider>> GetServiceProvidersAsync();
         Task<IEnumerable<HspnServiceProvider>> GetServiceProviderByIdAsync(int serviceProviderId);
-        Task<IActionResult> DeleteServiceProviderAsync(int serviceProviderId);
-        Task<IEnumerable<HspnServiceProvider>> GetServiceProviderInfoAsync(int serviceProviderId);
+        Task<int> DeleteServiceProviderAsync(int serviceProviderId);
+        Task<IEnumerable<HspnServiceProviderInfo>> GetServiceProviderInfoAsync(int serviceProviderId);
         Task<int> InsertServiceProviderAsync(HspnServiceProviderModel serviceProviderInsert);
         Task<IEnumerable<HspnShopType>> GetShopTypesAsync();
         Task<IEnumerable<HspnShopType>> GetShopTypeByIdAsync(int shopTypeId);

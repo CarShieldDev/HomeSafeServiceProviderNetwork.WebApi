@@ -425,7 +425,7 @@ namespace HomeSafeServiceProviderNetwork.WebApi.Services
         }
 
 
-        public async Task<IActionResult> DeleteServiceProviderAsync(int serviceProviderId)
+        public async Task<int> DeleteServiceProviderAsync(int serviceProviderId)
         {
             try
             {
@@ -439,7 +439,7 @@ namespace HomeSafeServiceProviderNetwork.WebApi.Services
             }
         }
 
-        public async Task<IEnumerable<HspnServiceProvider>> GetServiceProviderInfoAsync(int serviceProviderId)
+        public async Task<IEnumerable<HspnServiceProviderInfo>> GetServiceProviderInfoAsync(int serviceProviderId)
         {
             try
             {

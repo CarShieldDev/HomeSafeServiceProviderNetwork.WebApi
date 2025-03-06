@@ -908,12 +908,73 @@ namespace HomeSafeServiceProviderNetwork.WebApi.Repositories
         }
 
 
-        public async Task<IActionResult> DeleteServiceProviderAsync(int serviceProviderId)
+        public async Task<int> DeleteServiceProviderAsync(int serviceProviderId)
         {
-            throw new NotImplementedException();
+            using (IDbConnection connection = _hspnContext.CreateHspnConnection())
+            {
+                using (connection)
+                {
+                    using (SqlCommand command = new SqlCommand("[hspn].[usp_DeleteServiceProvider]", (SqlConnection)connection))
+                    {
+                        await Task.Delay(1);
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter paramHoursOfOperationJSON = new SqlParameter();
+                        SqlParameter paramServiceProviderId = new SqlParameter();
+                        paramServiceProviderId.ParameterName = "@int_ServiceProviderID";
+                        paramServiceProviderId.SqlDbType = SqlDbType.Int;
+                        paramServiceProviderId.Value = serviceProviderId;
+                        paramServiceProviderId.Direction = ParameterDirection.Input;
+                        command.Parameters.Add(paramServiceProviderId);
+
+                        SqlParameter paramCreatedBy = new SqlParameter();
+                        paramCreatedBy.ParameterName = "@vch_DeletedBy";
+                        paramCreatedBy.SqlDbType = SqlDbType.NVarChar;
+                        paramCreatedBy.Size = 50;
+                        paramCreatedBy.Direction = ParameterDirection.Input;
+                        paramCreatedBy.Value = Environment.UserName;
+                        command.Parameters.Add(paramCreatedBy);
+
+                        SqlParameter paramErrorCode = new SqlParameter();
+                        paramErrorCode.ParameterName = "@int_ErrorCode";
+                        paramErrorCode.SqlDbType = SqlDbType.Int;
+                        paramErrorCode.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(paramErrorCode);
+
+                        SqlParameter paramErrorMessage = new SqlParameter();
+                        paramErrorMessage.ParameterName = "@vch_ErrorMessage";
+                        paramErrorMessage.SqlDbType = SqlDbType.NVarChar;
+                        paramErrorMessage.Size = 500;
+                        paramErrorMessage.Direction = ParameterDirection.Output;
+                        command.Parameters.Add(paramErrorMessage);
+
+                        try
+                        {
+                            connection.Open();
+                            command.ExecuteNonQuery();
+                            int errorCode = (int)command.Parameters["@int_ErrorCode"].Value;
+                            if (errorCode == 0)
+                            {
+                                return errorCode;
+                            }
+                            else
+                            {
+                                string errorMessage = (string)command.Parameters["@vch_ErrorMessage"].Value;
+                                _logger.LogError($"Stored Procedure [hspn].[usp_UpsertCoupons] returned error: {errorCode} : {errorMessage}");
+                                return errorCode;
+                            }
+                        }
+                        catch (SqlException ex)
+                        {
+                            _logger.LogError("SQL Exception:", ex);
+                            throw;
+                        }
+                    }
+                }
+            }
         }
 
-        public async Task<IEnumerable<HspnServiceProvider>> GetServiceProviderInfoAsync(int serviceProviderId)
+        public async Task<IReadOnlyList<HspnServiceProviderInfo>> GetServiceProviderInfoAsync(int serviceProviderId)
         {
             using (IDbConnection connection = _hspnContext.CreateHspnConnection())
             {
@@ -923,38 +984,43 @@ namespace HomeSafeServiceProviderNetwork.WebApi.Repositories
                     {
                         using (SqlCommand command = new SqlCommand("[hspn].[usp_GetServiceProviderInfo]", (SqlConnection)connection))
                         {
+                            await Task.Delay(1);
                             command.CommandType = CommandType.StoredProcedure;
                             command.Parameters.Add(new SqlParameter("@int_ServiceProviderID", serviceProviderId));
                             connection.Open();
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
-                                List<HspnServiceProvider> serviceProviderInfo = new List<HspnServiceProvider>();
+                                List<HspnServiceProviderInfo> serviceProviderInfo = new List<HspnServiceProviderInfo>();
                                 while (reader.Read())
                                 {
-                                    serviceProviderInfo.Add(new HspnServiceProvider
+                                    serviceProviderInfo.Add(new HspnServiceProviderInfo
                                     {
-                                        ServiceProviderID = reader.GetInt32(0),
-                                        ServiceProviderName = reader.GetString(1),
-                                        NetworkStatusID = reader.GetInt32(2),
-                                        FormTypeID = reader.GetInt32(3),
-                                        Phone = reader.GetString(4),
-                                        Email = reader.GetString(5),
-                                        ShopTypeID = reader.GetInt32(6),
-                                        ContactName = reader.GetString(7),
-                                        StreetAddress = reader.GetString(8),
-                                        City = reader.GetString(9),
-                                        StateCode = reader.GetString(10),
-                                        Zip = reader.GetString(11),
-                                        CountryCode = reader.GetString(12),
-                                        ShowLocationOnSearches = reader.GetBoolean(13),
-                                        NumberOfTechnicians = reader.GetInt32(14),
-                                        MinimumInspectionRateInUSD = reader.GetDecimal(15),
-                                        OtherInfoJSON = reader.GetString(16),
-                                        RecordStatus = reader.GetChar(17),
-                                        InsertDate = reader.GetDateTime(18),
-                                        InsertedBy = reader.GetString(19),
-                                        ModifiedDate = reader.GetDateTime(20),
-                                        ModifiedBy = reader.GetString(21)
+                                        ServiceProviderID = reader.GetInt32("ServiceProviderID"),
+                                        ServiceProviderName = reader.GetString("ServiceProviderName"),
+                                        NetworkStatusID = reader.GetInt32("NetworkStatusID"),
+                                        FormTypeID = reader.IsDBNull("FormTypeID") ? null : reader.GetInt32("FormTypeID"),
+                                        Phone = reader.GetString("Phone"),
+                                        Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
+                                        ShopTypeID = reader.GetInt32("ShopTypeID"),
+                                        ContactName = reader.GetString("ContactName"),
+                                        StreetAddress = reader.GetString("StreetAddress"),
+                                        City = reader.GetString("City"),
+                                        StateCode = reader.GetString("StateCode"),
+                                        Zip = reader.GetString("Zip"),
+                                        CountryCode = reader.GetString("CountryCode"),
+                                        ShowLocationOnSearches = reader.GetBoolean("ShowLocationOnSearches"),
+                                        NumberOfTechnicians = reader.IsDBNull("NumberOfTechnicians") ? null : reader.GetInt32("NumberOfTechnicians"),
+                                        MinimumInspectionRateInUSD = reader.IsDBNull("MinimumInspectionRateInUSD") ? null : reader.GetDecimal("MinimumInspectionRateInUSD"),
+                                        OtherInfoJSON = reader.IsDBNull("OtherInfoJSON") ? null : reader.GetString("OtherInfoJSON"),
+                                        //RecordStatus = reader.GetString("RecordStatus"),
+                                        InsertDate = reader.GetString("InsertDate"),
+                                        InsertedBy = reader.IsDBNull("InsertedBy") ? null : reader.GetString("InsertedBy"),
+                                        ModifiedDate = reader.GetString("ModifiedDate"),
+                                        ModifiedBy = reader.IsDBNull("ModifiedBy") ? null : reader.GetString("ModifiedBy"),
+                                        NetworkStatus = reader.GetString("NetworkStatus"),
+                                        NetworkStatusDescription = reader.IsDBNull("NetworkStatusDescription") ? null : reader.GetString("NetworkStatusDescription"),
+                                        ShopType = reader.GetString("ShopType"),
+                                        FormType = reader.IsDBNull("FormType") ? null : reader.GetString("FormType")
                                     });
                                 }
                                 return serviceProviderInfo;
